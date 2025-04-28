@@ -31,3 +31,6 @@ def test_get_trip_duration_mins(get_spark):
     # Assert that the differences are as expected
     assert results[0]["trip_duration_mins"] == 10
     assert results[1]["trip_duration_mins"] == 30
+
+def fail_test():
+    assert 1==2
