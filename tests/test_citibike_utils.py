@@ -32,5 +32,5 @@ def test_get_trip_duration_mins(get_spark):
     assert results[0]["trip_duration_mins"] == 10
     assert results[1]["trip_duration_mins"] == 30
 
-def fail_test():
+def test_fail():
     assert 1==2
