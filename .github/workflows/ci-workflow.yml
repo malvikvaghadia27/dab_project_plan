@@ -28,12 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-pyspark.txt
 
-      - name: Run pytest
+      - name: Run Tests with pytest
         run: |
-          pytest --maxfail=1 --disable-warnings --junitxml=pytest-results.xml
-
-      - name: Upload pytest results
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-results
-          path: pytest-results.xml
+          pip install pytest pytest-cov
+          pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
