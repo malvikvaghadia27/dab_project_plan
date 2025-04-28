@@ -1,0 +1,46 @@
+# azure-pipelines-ci.yml
+
+trigger:
+  branches:
+    include:
+      - 'feature/*'
+
+pr:
+  branches:
+    include:
+      - main
+
+jobs:
+  - job: CI
+    displayName: Databricks Asset Bundles CI
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      # 1. Use Python 3.11
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.11'
+          addToPath: true
+
+      # 2. Check out the feature or PR branch
+      - checkout: self
+
+      # 3. Install Python dependencies
+      - bash: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-pyspark.txt
+        displayName: 'Install Python dependencies'
+
+      # 4. Run pytest and emit JUnit XML results
+      - bash: |
+          pytest --maxfail=1 --disable-warnings --junitxml=pytest-results.xml
+        displayName: 'Run pytest'
+
+      # 5. Publish pytest results to Azure Pipelines
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'pytest-results.xml'
+          failTaskOnFailedTests: true
+        displayName: 'Publish pytest results'

@@ -1,0 +1,109 @@
+# azure-pipelines-cd.yml
+
+trigger:
+  branches:
+    include:
+      - main
+
+stages:
+
+  - stage: Test
+    displayName: Deploy to Test (Dev Workspace)
+    variables:
+      - group: 'Test Variables'           # brings in DATABRICKS_CLIENT_SECRET for Test
+      - name: DATABRICKS_HOST
+        value: 'https://adb-1564612137672995.15.azuredatabricks.net/'
+      - name: AZURE_TENANT_ID
+        value: '21a72fff-b86b-492c-bb02-b09e6e0beab9'
+      - name: AZURE_CLIENT_ID
+        value: '85e61755-67e1-4fef-a38a-bbb24410aaa8'
+
+    jobs:
+      - job: DeployToTest
+        displayName: Deploy to Dev
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.11'
+              addToPath: true
+
+          - checkout: self
+
+          - bash: |
+              curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+            displayName: Install Databricks CLI
+
+          - bash: |
+              cat <<EOF > ~/.databrickscfg
+              [DEV]
+              host = $DATABRICKS_HOST
+              azure_tenant_id = $AZURE_TENANT_ID
+              azure_client_id = $AZURE_CLIENT_ID
+              azure_client_secret = $SP_SECRET
+              EOF
+            displayName: Configure Databricks CLI (Dev)
+
+          - bash: |
+              pip install --upgrade pip
+              pip install setuptools wheel
+            displayName: Install Python Dependencies
+
+          - bash: |
+              databricks bundle deploy -t dev -p DEV
+            displayName: Bundle Deploy to Dev
+
+  - stage: Prod
+    displayName: Deploy to Prod (Prod Workspace)
+    dependsOn: Test
+    variables:
+      - group: 'Prod Variables'           # brings in DATABRICKS_CLIENT_SECRET for Prod
+      - name: DATABRICKS_HOST
+        value: 'https://adb-3205945681233138.18.azuredatabricks.net/'
+      - name: AZURE_TENANT_ID
+        value: '21a72fff-b86b-492c-bb02-b09e6e0beab9'
+      - name: AZURE_CLIENT_ID
+        value: '85e61755-67e1-4fef-a38a-bbb24410aaa8'
+
+    jobs:
+      - deployment: DeployToProd
+        displayName: Deploy to Prod
+        environment:
+          name: Prod
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: '3.11'
+                    addToPath: true
+
+                - checkout: self
+
+                - bash: |
+                    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+                  displayName: Install Databricks CLI
+
+                - bash: |
+                    cat <<EOF > ~/.databrickscfg
+                    [PROD]
+                    host = $DATABRICKS_HOST
+                    azure_tenant_id = $AZURE_TENANT_ID
+                    azure_client_id = $AZURE_CLIENT_ID
+                    azure_client_secret = $SP_SECRET
+                    EOF
+                  displayName: Configure Databricks CLI (Prod)
+
+                - bash: |
+                    pip install --upgrade pip
+                    pip install setuptools wheel
+                  displayName: Install Python Dependencies
+
+                - bash: |
+                    databricks bundle deploy -t prod -p PROD
+                  displayName: Bundle Deploy to Prod

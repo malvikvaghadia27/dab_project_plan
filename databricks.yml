@@ -1,0 +1,50 @@
+# This is a Databricks asset bundle definition for dab_project_demo.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: dab_project_plan
+  uuid: 81f5a25c-2137-4cf5-a24c-58853cedc5c3
+
+include:
+  - resources/*.yml
+  - variables/*.yml
+
+variables:
+  catalog: 
+    default: "citibike_dev"
+  development:
+    default: true
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    variables:
+      catalog: "citibike_dev"
+    workspace:
+      host: https://adb-1564612137672995.15.azuredatabricks.net/
+    permissions:
+      - user_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
+        level: CAN_MANAGE
+    run_as:
+      service_principal_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
+
+  prod:
+    mode: production
+    variables:
+      catalog: 
+        default: "citibike_prod"
+      development:
+        default: false
+    workspace:
+      host: https://adb-3205945681233138.18.azuredatabricks.net/
+      # We explicitly specify /Workspace/Users/malvik.vaghadia@columbusglobal.com to make sure we only have a single copy.
+      root_path: /Shared/.bundle/${bundle.name}/${bundle.target}
+    permissions:
+      - user_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
+        level: CAN_MANAGE
+    run_as:
+      service_principal_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
