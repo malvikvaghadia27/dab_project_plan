@@ -1,0 +1,16 @@
+name: Databricks Asset Bundles CI
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'main'
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Message
+        run: echo "This is a demo workflow"
