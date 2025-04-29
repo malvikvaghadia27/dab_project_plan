@@ -10,6 +10,7 @@ on:
 
 jobs:
   ci_job:
+    name: CI Job
     runs-on: ubuntu-latest
 
     steps:
