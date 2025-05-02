@@ -12,31 +12,26 @@ jobs:
     environment: test
     steps:
       - uses: actions/checkout@v3
-
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
-
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
           pip install setuptools
-
       - name: Configure Databricks
-			  run: |			
-    			    # write out the profile (here called "TEST")
-    			    cat <<EOF > ~/.databrickscfg
-              [TEST]
-    			    host = https://adb-3205945681233138.18.azuredatabricks.net/
-    			    azure_tenant_id = ${{ secrets.AZURE_TENANT_ID }}
-    			    azure_client_id = ${{ secrets.AZURE_CLIENT_ID }}
-    			    azure_client_secret = ${{ secrets.AZURE_CLIENT_SECRET }}
-    			    EOF
-
+	  run: |			
+		# write out the profile (here called "TEST")
+		cat <<EOF > ~/.databrickscfg
+  		[TEST]
+		host = https://adb-3205945681233138.18.azuredatabricks.net/
+		azure_tenant_id = ${{ secrets.AZURE_TENANT_ID }}
+		azure_client_id = ${{ secrets.AZURE_CLIENT_ID }}
+		azure_client_secret = ${{ secrets.AZURE_CLIENT_SECRET }}
+		EOF
       - name: Deploy to PROD
         run: |
           databricks bundle deploy \
@@ -50,20 +45,16 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v3
-
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
       - name: Install Databricks CLI
         run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
-
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install setuptools
-      
+          pip install setuptools 
       - name: Configure Databricks
         run: |
               # write out the profile (here called "PROD")
@@ -74,7 +65,6 @@ jobs:
               azure_client_id = ${{ secrets.AZURE_CLIENT_ID }}
               azure_client_secret = ${{ secrets.AZURE_CLIENT_SECRET }}
               EOF
-
       - name: Deploy to PROD
         run: |
           databricks bundle deploy \
