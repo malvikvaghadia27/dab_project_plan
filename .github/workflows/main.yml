@@ -41,7 +41,7 @@ jobs:
         run: |
           databricks bundle deploy \
             --target prod \
-            --profile Test
+            --profile TEST
 
   cd-deploy-prod:
     name: Deploy to PROD
@@ -79,4 +79,4 @@ jobs:
         run: |
           databricks bundle deploy \
             --target prod \
-            --profile Prod
+            --profile PROD
