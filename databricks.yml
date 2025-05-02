@@ -4,6 +4,7 @@ bundle:
   name: dab_project_plan
   uuid: 81f5a25c-2137-4cf5-a24c-58853cedc5c3
 
+
 include:
   - resources/*.yml
   - variables/*.yml
@@ -26,17 +27,12 @@ targets:
       catalog: "citibike_dev"
     workspace:
       host: https://adb-1564612137672995.15.azuredatabricks.net/
-    permissions:
-      - user_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
-        level: CAN_MANAGE
-    run_as:
-      service_principal_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
 
   prod:
     mode: production
     variables:
       catalog: 
-        default: "citibike_prod"
+        default: "citibike_dev"
       development:
         default: false
     workspace:
@@ -44,7 +40,7 @@ targets:
       # We explicitly specify /Workspace/Users/malvik.vaghadia@columbusglobal.com to make sure we only have a single copy.
       root_path: /Shared/.bundle/${bundle.name}/${bundle.target}
     permissions:
-      - user_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
+      - service_principal_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8
         level: CAN_MANAGE
     run_as:
       service_principal_name: 85e61755-67e1-4fef-a38a-bbb24410aaa8

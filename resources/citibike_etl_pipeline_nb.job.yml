@@ -5,7 +5,7 @@ resources:
       tasks:
         - task_key: 00_whl_upload
           python_wheel_task:
-            package_name: dab_project
+            package_name: dab_project_plan
             entry_point: main
           job_cluster_key: ds3_v2_sn
           libraries:
