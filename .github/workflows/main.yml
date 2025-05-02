@@ -1,4 +1,4 @@
-name: Deploy Databricks Bundle
+name: CD Workflow
 
 on:
   push:
